@@ -1,0 +1,235 @@
+<?php
+/**
+ * This file is part of the Staempfli project.
+ *
+ * Staempfli_ProductAttachment is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * This script is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * PHP version 5
+ *
+ * @category  Staempfli
+ * @package   Staempfli_ProductAttachment
+ * @author    Staempfli Team <webteam@staempfli.com>
+ * @copyright 2014 Staempfli AG (http://http://www.staempfli.com/)
+ * @license   http://opensource.org/licenses/gpl-3.0 GNU General Public License, version 3 (GPLv3)
+ * @version   $Id:$
+ * @since     1.0.0
+ */
+?>
+<?php $_product = $this->getProduct()?>
+<?php $_store   = (Mage::app()->getRequest()->getParam('store')) ? Mage::app()->getRequest()->getParam('store') : 0; ?>
+<?php $_files   = Mage::getModel('staempfli_productattachment/file')->getFilesByProductId($_product->getId()); ?>
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo Mage::helper('staempfli_productattachment')->__('All Files'); ?></h4>
+        <div class="form-buttons"></div>
+    </div>
+    <div class="fieldset">
+        <div class="grid">
+            <div class="hor-scroll">
+                <table cellspacing="0" class="data border">
+                    <col width="18%"/>
+                    <col width="20%" />
+                    <col width="60%" />
+                    <col width="1%"/>
+                    <col width="1%"/>
+                    <col width="1%"/>
+                    <thead>
+                    <tr class="headings">
+                        <th><?php echo Mage::helper('staempfli_productattachment')->__('Filename')?> <span class="required">*</span></th>
+                        <th><?php echo Mage::helper('staempfli_productattachment')->__('Title')?></th>
+                        <th><?php echo Mage::helper('staempfli_productattachment')->__('Description')?></th>
+                        <th><?php echo Mage::helper('staempfli_productattachment')->__('Sort Order')?></th>
+                        <th><?php echo Mage::helper('staempfli_productattachment')->__('Storeview')?></th>
+                        <th><?php echo Mage::helper('staempfli_productattachment')->__('Delete')?></th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <td colspan="6" align="right">
+                            <button title="<?php echo Mage::helper('staempfli_productattachment')->__('Refresh list'); ?>" type="button" class="scalable refreshBtn" id="refreshBtn"><span><span><span><?php echo Mage::helper('staempfli_productattachment')->__('Refresh list')?></span></span></span></button>
+                            <button title="<?php echo Mage::helper('staempfli_productattachment')->__('Save'); ?>" type="button" class="scalable updateBtn" id="updateBtn"><span><span><span><?php echo Mage::helper('staempfli_productattachment')->__('Save')?></span></span></span></button>
+                        </td>
+                    </tr>
+                    </tfoot>
+                    <tbody id="staempfli_productattachment_items">
+                    <?php if(count($_files) > 0): ?>
+                        <?php foreach($_files as $file): ?>
+                            <tr>
+                                <td><?php echo $file->getFilename(); ?></td>
+                                <td><input type="text" name="title_<?php echo $file->getId(); ?>" class="input-text" value="<?php echo $file->getTitle(); ?>" /></td>
+                                <td><input type="text" name="description_<?php echo $file->getId(); ?>" class="input-text" value="<?php echo $file->getDescription(); ?>" /></td>
+                                <td><input type="text" name="sort_order_<?php echo $file->getId(); ?>" class="input-text" value="<?php echo $file->getSortOrder(); ?>" /></td>
+                                <td><?php echo Mage::helper('staempfli_productattachment')->getStoreNameById($file->getStoreId()); ?></td>
+                                <td><a href="#" id="delete_<?php echo $file->getId(); ?>" class="staempfli_productattachment_delete"><?php echo Mage::helper('staempfli_productattachment')->__('Delete')?></a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" class="staempfli_content">
+                                <?php echo Mage::helper('staempfli_productattachment')->__('No records found.')?>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<h4><?php echo Mage::helper('staempfli_productattachment')->__('Upload Files')?></h4>
+<iframe src="<?php echo Mage::getModel('adminhtml/url')->getUrl('*/productattachment/form/product/' . $_product->getId() . '/store/' . $_store); ?>" name="staempfli_productattachment_iframe" id="staempfli_productattachment_iframe" style="margin: 0; padding: 0; border: 0; width: 100%; height: 30px;"></iframe>
+
+
+<script type="text/javascript">
+    document.observe('dom:loaded', function() {
+        var list_url        = '<?php echo Mage::getModel('adminhtml/url')->getUrl('*/productattachment/list'); ?>',
+            delete_url      = '<?php echo Mage::getModel('adminhtml/url')->getUrl('*/productattachment/delete'); ?>',
+            update_url      = '<?php echo Mage::getModel('adminhtml/url')->getUrl('*/productattachment/update'); ?>',
+            tab             = $("product_info_tabs_staempfli_productattachment"),
+            refreshBtn      = $("refreshBtn"),
+            contentDst      = $("staempfli_productattachment_items"),
+            product_id      = '<?php echo $_product->getId(); ?>',
+            store           = '<?php echo $_store; ?>',
+            deleteButtons, updateValues, doRequest, deleteFile, updateDeleteButtons, trackDelete, getList, handleResponse, updateListener, deleteListener, itemsTemplate, errorTemplate;
+
+        errorTemplate = '<tr><td colspan="6" class="staempfli_content">{{message}}</td></tr>';
+        itemsTemplate = '<tr>' +
+        '<td>filename</td>' +
+        '<td><input type="text" name="title_id" class="input-text" value="title_value" /></td>' +
+        '<td><input type="text" name="description_id" class="input-text" value="description_value" /></td>' +
+        '<td><input type="text" name="sort_order_id" class="input-text" value="sort_order_value" /></td>' +
+        '<td>store_name</td>' +
+        '<td><a href="#" id="delete_value" class="staempfli_productattachment_delete"><?php echo Mage::helper('staempfli_productattachment')->__('Delete')?></a></td>' +
+        '</tr>';
+
+        getList = function() {
+            doRequest(list_url, {
+                product_id: product_id,
+                store_id:   store
+            });
+        };
+
+        deleteFile = function(file_id) {
+            doRequest(delete_url, {
+                file_id: file_id,
+                product_id: product_id
+            }, 'delete');
+        };
+
+        updateValues = function() {
+            var inputFields = $$('#staempfli_productattachment_items input'),
+                valueFields = {};
+            inputFields.each(function (elem) {
+                if(elem.value.length > 0) {
+                    valueFields[elem.name] = elem.value;
+                }
+            });
+
+            // set product id
+            valueFields['product_id'] = product_id;
+            doRequest(update_url, valueFields, 'update');
+        };
+
+        handleResponse = function(type, data) {
+            var jsonData = data.responseText.evalJSON(),
+                content = '',
+                map;
+
+            if(type === 'list') {
+                if(data.status === 200 && jsonData.status === 'success') {
+                    jsonData.files.forEach(function(e) {
+                        map = {
+                            filename:           e.filename,
+                            title_value:        e.title,
+                            description_value:  e.description,
+                            sort_order_value:   e.sort_order,
+                            store_id:           e.store_id,
+                            store_name:         e.store_name,
+                            delete_value:       'delete_' + e.id,
+                            title_id:           'title_' + e.id,
+                            description_id:     'description_' + e.id,
+                            sort_order_id:      'sort_order_' + e.id
+
+                        };
+                        content += itemsTemplate.replace(/filename|title_value|description_value|sort_order_value|store_id|store_name|delete_value|title_id|description_id|sort_order_id/gi, function(matched){
+                            return map[matched];
+                        });
+                    });
+                    contentDst.innerHTML = content;
+                } else {
+                    if(jsonData.status === 'error' && jsonData.content) {
+                        content = errorTemplate.replace('{{message}}', jsonData.content);
+                    } else {
+                        content = errorTemplate.replace('{{message}}', '');
+                    }
+                    contentDst.innerHTML = content;
+                }
+            } else if(type === 'delete') {
+                if(jsonData.status === 'success') {
+                    getList();
+                }
+            } else if(type === 'update') {
+                if(jsonData.status === 'success') {
+                    getList();
+                }
+            }
+        };
+
+        doRequest = function(url, params, type) {
+            if((typeof type) === 'undefined') {
+                type = 'list';
+            }
+            new Ajax.Request(url, {
+                method: 'post',
+                parameters: params,
+                onComplete: function(transport) {
+                    handleResponse(type, transport);
+                    updateDeleteButtons();
+                }
+            });
+        };
+
+        updateDeleteButtons = function() {
+            deleteButtons = $$('.staempfli_productattachment_delete');
+            deleteButtons.each(function (elem) {
+                Event.observe(elem, 'click', deleteListener);
+            });
+        };
+
+        deleteListener = function(event) {
+            var file_id;
+            event.preventDefault();
+
+            file_id = event.target.id.replace('delete_', '');
+            deleteFile(file_id);
+
+            Event.stopObserving(deleteButtons, 'click', deleteListener)
+        };
+
+        updateListener = function() {
+            document.observe("list:update", function() {
+                getList();
+            });
+            Event.stopObserving(tab, 'click', updateListener);
+        };
+
+        Event.observe(tab, 'click', updateListener);
+        Event.observe(refreshBtn, 'click', function() {
+            getList();
+        });
+
+        Event.observe(updateBtn, 'click', function() {
+            updateValues();
+        });
+
+        updateDeleteButtons();
+    });
+
+</script>
+

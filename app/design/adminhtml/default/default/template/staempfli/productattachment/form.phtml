@@ -1,0 +1,126 @@
+<?php
+/**
+ * This file is part of the Staempfli project.
+ *
+ * Staempfli_ProductAttachment is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * This script is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * PHP version 5
+ *
+ * @category  Staempfli
+ * @package   Staempfli_ProductAttachment
+ * @author    Staempfli Team <webteam@staempfli.com>
+ * @copyright 2014 Staempfli AG (http://http://www.staempfli.com/)
+ * @license   http://opensource.org/licenses/gpl-3.0 GNU General Public License, version 3 (GPLv3)
+ * @version   $Id:$
+ * @since     1.0.0
+ */
+?>
+<?php
+$product_id = $this->getRequest()->getParam('product');
+$store      = ($this->getRequest()->getParam('store')) ? $this->getRequest()->getParam('store') : 0;
+$_product   =  Mage::getModel('catalog/product')->load($product_id);
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->getLang() ?>" lang="<?php echo $this->getLang() ?>">
+<head>
+    <?php echo $this->getChildHtml('head'); ?>
+</head>
+<body>
+<?php if(!$_product->getSku()): ?>
+    <?php echo Mage::helper('staempfli_productattachment')->__('Product does not exist'); ?>
+<?php else: ?>
+<input type="hidden" name="max_upload_size" id="max_upload_size" value="<?php echo Mage::helper('staempfli_productattachment')->getPostMaxSize(); ?>" />
+<form action="<?php echo Mage::getModel('adminhtml/url')->getUrl('*/productattachment/upload'); ?>" method="post" enctype="multipart/form-data" id="staempfli_productattachment_form">
+    <?php echo $this->getBlockHtml('formkey')?>
+
+    <table class="productattachment" id="productattachment">
+        <thead>
+
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="2" class="hidden">
+                <input type="file" id="fileElem" name="file_data[]" multiple/>
+                <input type="hidden" name="product" value="<?php echo $_product->getId(); ?>" />
+                <input type="hidden" name="store" value="<?php echo $store; ?>" />
+            </td>
+        </tr>
+        <tr>
+            <td class="files">
+                <div id="file_count"></div>
+            </td>
+            <td class="buttons">
+                <button title="<?php echo Mage::helper('staempfli_productattachment')->__('Browse Files...'); ?>" type="button" class="scalable" id="fileSelect"><span><span><span><?php echo Mage::helper('staempfli_productattachment')->__('Browse Files...')?></span></span></span></button>
+                <button title="<?php echo Mage::helper('staempfli_productattachment')->__('Upload Files'); ?>" type="submit" class="scalable uploadBtn disabled" id="uploadBtn" ><span><span><span><?php echo Mage::helper('staempfli_productattachment')->__('Upload Files')?></span></span></span></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>
+<script type="text/javascript">
+    var fileSelect   = document.getElementById('fileSelect'),
+        fileInput    = document.getElementById('fileElem'),
+        fileCount    = document.getElementById("file_count"),
+        submitButton = document.getElementById("uploadBtn"),
+        maxSize      = parseInt(document.getElementById("max_upload_size").value),
+        clickEvent,
+        checkFileSize,
+        size = 0;
+
+    clickEvent = function(el) {
+        var evt = document.createEvent('Event');
+        evt.initEvent('click', true, true);
+        el.dispatchEvent(evt);
+    };
+
+    fileSelect.addEventListener('click', function(e) {
+        fileInput.click();
+    }, false);
+
+    submitButton.disable();
+
+    fileInput.onchange = function () {
+        var files = fileInput.files;
+        size = 0;
+        if(files.length === 1) {
+            fileCount.innerHTML = files.length + ' <?php echo Mage::helper('staempfli_productattachment')->__('File chosen for upload'); ?>';
+            submitButton.removeClassName('disabled').enable();
+        } else if(files.length > 1) {
+            fileCount.innerHTML = files.length + ' <?php echo Mage::helper('staempfli_productattachment')->__('Files chosen for upload'); ?>';
+            submitButton.removeClassName('disabled').enable();
+        } else {
+            fileCount.innerHTML = files.length + ' <?php echo Mage::helper('staempfli_productattachment')->__('Files chosen for upload'); ?>';
+            submitButton.addClassName('disabled').disable();
+        }
+        checkFileSize(files);
+    };
+
+    checkFileSize = function(files) {
+        var i = 0,
+            length = files.length;
+
+        while(i < length) {
+            size += files[i].size;
+            i++;
+        }
+
+        if(size >= (maxSize - 100)) {
+            submitButton.addClassName('disabled').disable();
+            fileCount.innerHTML = '<span class="error">' + '<?php echo Mage::helper('staempfli_productattachment')->__('Maximum upload limit reached!'); ?>' + '</span>';
+        }
+
+    };
+
+    Event.observe(window, 'load', function() {
+        parent.document.fire('list:update');
+    });
+</script>
+<?php endif; ?>
+</html>

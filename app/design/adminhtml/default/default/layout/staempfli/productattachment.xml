@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<layout>
+    <adminhtml_productattachment_form>
+        <block type="staempfli_productattachment/adminhtml_form" name="root" output="toHtml" template="staempfli/productattachment/form.phtml">
+            <block type="adminhtml/page_head" name="head" as="head" template="page/head.phtml">
+            </block>
+
+            <reference name="head">
+                <action method="setTitle" translate="title"><title>ProductAttachment</title></action>
+                <action method="addJs"><script>prototype/prototype.js</script></action>
+                <action method="addItem"><type>js</type><name>extjs/fix-defer-before.js</name><params/><if/><condition>can_load_ext_js</condition></action>
+                <action method="addJs"><script>prototype/window.js</script></action>
+                <action method="addJs"><script>scriptaculous/builder.js</script></action>
+                <action method="addJs"><script>scriptaculous/effects.js</script></action>
+                <action method="addJs"><script>scriptaculous/dragdrop.js</script></action>
+                <action method="addJs"><script>scriptaculous/controls.js</script></action>
+                <action method="addJs"><script>scriptaculous/slider.js</script></action>
+                <action method="addJs"><script>lib/ccard.js</script></action>
+                <action method="addJs"><script>prototype/validation.js</script></action>
+                <action method="addJs"><script>varien/js.js</script></action>
+                <action method="addJs"><script>mage/translate.js</script></action>
+
+                <action method="addJs"><script>mage/adminhtml/hash.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/events.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/loader.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/grid.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/tabs.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/form.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/accordion.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/tools.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/uploader.js</script></action>
+                <action method="addJs"><script>mage/adminhtml/product.js</script></action>
+
+                <action method="addCss"><name>reset.css</name></action>
+                <action method="addCss"><name>boxes.css</name></action>
+                <action method="addCss"><name>custom.css</name></action>
+
+                <action method="addCss"><name>staempfli/css/productattachment.css</name></action>
+
+                <action method="addItem"><type>skin_css</type><name>iestyles.css</name><params/><if>lt IE 8</if></action>
+                <action method="addItem"><type>skin_css</type><name>below_ie7.css</name><params/><if>lt IE 7</if></action>
+                <action method="addItem"><type>skin_css</type><name>ie7.css</name><params/><if>IE 7</if></action>
+            </reference>
+        </block>
+    </adminhtml_productattachment_form>
+</layout>

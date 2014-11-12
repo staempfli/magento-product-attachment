@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Staempfli_ProductAttachment>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Staempfli_ProductAttachment>
+    </modules>
+</config>
+
