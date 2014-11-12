@@ -47,4 +47,4 @@ License
 
 Copyright
 ---------
-(c) 2014 Staempfli Webteam
+(c) 2014, Stämpfli AG
