@@ -22,9 +22,12 @@ Compatibility
 
 Installation Instructions
 -------------------------
+1. Install the extension via Composer or copy all the files into your document root.
+2. Clear the cache, logout from the admin panel and then login again.
 
 Uninstallation
 --------------
+1. Remove all extension files from your Magento installation.
 
 Support
 -------
