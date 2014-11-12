@@ -39,7 +39,7 @@ Any contribution is highly appreciated. The best way to contribute code is to op
 
 Developer
 ---------
-Staempfli team and all other [contributors](https://github.com/staempfli/magento-product-attachment/contributors)
+Staempfli Webteam and all other [contributors](https://github.com/staempfli/magento-product-attachment/contributors)
 
 License
 -------
@@ -47,4 +47,4 @@ License
 
 Copyright
 ---------
-(c) 2014 Stämpfli Team
+(c) 2014 Staempfli Webteam
