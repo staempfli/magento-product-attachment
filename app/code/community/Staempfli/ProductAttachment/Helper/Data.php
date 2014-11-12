@@ -129,4 +129,16 @@ class Staempfli_ProductAttachment_Helper_Data extends Mage_Core_Helper_Abstract
 
         return $stores;
     }
+
+    /**
+     * Returns the localized datetime string
+     * @return string
+     * @throws Zend_Date_Exception
+     */
+    public function getLocalizedDateTime()
+    {
+        $datetime = Zend_Date::now();
+        $datetime->setLocale(Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_LOCALE))->setTimezone(Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_TIMEZONE));
+        return $datetime->get(Zend_Date::DATETIME_MEDIUM);
+    }
 }

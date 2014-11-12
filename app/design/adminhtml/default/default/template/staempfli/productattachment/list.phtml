@@ -51,7 +51,10 @@
                     </thead>
                     <tfoot>
                     <tr>
-                        <td colspan="6" align="right">
+                        <td colspan="2">
+                            <?php echo Mage::helper('staempfli_productattachment')->__('Date Updated')?>: <span id="staempfli_productattachment_message"><?php echo Mage::helper('staempfli_productattachment')->getLocalizedDateTime(); ?></span>
+                        </td>
+                        <td colspan="4" align="right">
                             <button title="<?php echo Mage::helper('staempfli_productattachment')->__('Refresh list'); ?>" type="button" class="scalable refreshBtn" id="refreshBtn"><span><span><span><?php echo Mage::helper('staempfli_productattachment')->__('Refresh list')?></span></span></span></button>
                             <button title="<?php echo Mage::helper('staempfli_productattachment')->__('Save'); ?>" type="button" class="scalable updateBtn" id="updateBtn"><span><span><span><?php echo Mage::helper('staempfli_productattachment')->__('Save')?></span></span></span></button>
                         </td>
@@ -94,6 +97,7 @@
             tab             = $("product_info_tabs_staempfli_productattachment"),
             refreshBtn      = $("refreshBtn"),
             contentDst      = $("staempfli_productattachment_items"),
+            messageDst      = $("staempfli_productattachment_message"),
             product_id      = '<?php echo $_product->getId(); ?>',
             store           = '<?php echo $_store; ?>',
             deleteButtons, updateValues, doRequest, deleteFile, updateDeleteButtons, trackDelete, getList, handleResponse, updateListener, deleteListener, itemsTemplate, errorTemplate;
@@ -141,7 +145,7 @@
                 content = '',
                 map;
 
-            if(type === 'list') {
+            if(type === 'list' || jsonData.type === 'list') {
                 if(data.status === 200 && jsonData.status === 'success') {
                     jsonData.files.forEach(function(e) {
                         map = {
@@ -162,6 +166,7 @@
                         });
                     });
                     contentDst.innerHTML = content;
+                    messageDst.innerHTML = jsonData.updated;
                 } else {
                     if(jsonData.status === 'error' && jsonData.content) {
                         content = errorTemplate.replace('{{message}}', jsonData.content);
@@ -169,14 +174,11 @@
                         content = errorTemplate.replace('{{message}}', '');
                     }
                     contentDst.innerHTML = content;
+                    messageDst.innerHTML = jsonData.updated;
                 }
-            } else if(type === 'delete') {
-                if(jsonData.status === 'success') {
-                    getList();
-                }
-            } else if(type === 'update') {
-                if(jsonData.status === 'success') {
-                    getList();
+            } else if(type === 'delete' || type === 'update') {
+                if(jsonData.status === 'error') {
+                    messageDst.innerHTML = jsonData.updated;
                 }
             }
         };

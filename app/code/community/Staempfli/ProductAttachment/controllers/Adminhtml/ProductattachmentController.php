@@ -80,22 +80,29 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
 
     /**
      * Return a list with all attached files for a product
+     *
+     * @param $product_id
+     * @param $store_id
      */
-    public function listAction()
+    public function listAction($product_id, $store_id)
     {
-        $data = array();
-
+        $filesArray     = array();
         $sessionFormKey = Mage::getSingleton('core/session')->getFormKey();
-        $product_id     = $this->getRequest()->getParam('product_id');
+        $productId      = ($product_id) ? $product_id : $this->getRequest()->getParam('product_id');
         $formKey        = $this->getRequest()->getParam('form_key');
-        $store          = $this->getRequest()->getParam('store_id');
+        $storeId        = ($store_id) ? $store_id : $this->getRequest()->getParam('store_id');
 
-        if($formKey && $product_id && $sessionFormKey === $formKey) {
-            $fileCollection = Mage::getModel('staempfli_productattachment/file')->getFilesByProductId($product_id);
+        // if $product_id & $store are set directly, we bypass the form key check
+        if($product_id && $store_id) {
+            $sessionFormKey = 0;
+            $formKey        = 0;
+        }
+
+        if($formKey && $productId && $sessionFormKey === $formKey) {
+            $fileCollection = Mage::getModel('staempfli_productattachment/file')->getFilesByProductId($productId);
             if(count($fileCollection) > 0) {
-                $data['status'] = 'success';
                 foreach($fileCollection as $row) {
-                    $data['files'][] = array(
+                    $filesArray[] = array(
                         'id'            => $row->getId(),
                         'filename'      => $row->getFilename(),
                         'title'         => ($row->getTitle()) ? $row->getTitle() : '',
@@ -106,15 +113,24 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
                         'store_id'      => $row->getStoreId(),
                         'store_name'    => Mage::helper('staempfli_productattachment')->getStoreNameById($row->getStoreId())
                     );
+                    $data = $this->_prepareOutputData(
+                        'success',
+                        $filesArray,
+                        'list'
+                    );
                 }
             } else {
-                $data['status']     = 'error';
-                $data['content']    = Mage::helper('staempfli_productattachment')->__('No records found.');
+                $data = $this->_prepareOutputData(
+                    'error',
+                    Mage::helper('staempfli_productattachment')->__('No records found.'),
+                    'list'
+                );
             }
         }
 
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));
+        return;
     }
 
 
@@ -123,12 +139,11 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
      */
     public function updateAction()
     {
-        $data           = array();
         $updateParams   = array();
         $sessionFormKey = Mage::getSingleton('core/session')->getFormKey();
         $product_id     = $this->getRequest()->getParam('product_id');
         $formKey        = $this->getRequest()->getParam('form_key');
-        $params         =$this->getRequest()->getParams();
+        $params         = $this->getRequest()->getParams();
 
         if($formKey && $product_id && $sessionFormKey === $formKey) {
             $fileModel = Mage::getModel('staempfli_productattachment/file');
@@ -152,13 +167,18 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
                 $fileModel->updateFile($file_id, $fileData);
             }
 
-            $data['status'] = 'success';
-            $data['content']    = Mage::helper('staempfli_productattachment')->__('Update was successful.');
+            $this->listAction($product_id, 0);
+            return;
+        } else {
+            $data = $this->_prepareOutputData(
+                'error',
+                Mage::helper('staempfli_productattachment')->__('There was a problem during update.'),
+                'update'
+            );
         }
-
-
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));
+        return;
     }
 
     /**
@@ -166,9 +186,9 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
      */
     public function deleteAction()
     {
-        $data = array();
         $sessionFormKey = Mage::getSingleton('core/session')->getFormKey();
         $file_id        = $this->getRequest()->getParam('file_id');
+        $product_id     = $this->getRequest()->getParam('product_id');
         $formKey        = $this->getRequest()->getParam('form_key');
 
         if($formKey && $file_id && $sessionFormKey === $formKey) {
@@ -179,22 +199,56 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
             if($filename = $fileCollection->getFirstItem()->getFilename()) {
                 if(unlink(Mage::helper('staempfli_productattachment')->getUploadDir() . DS . $filename)) {
                     $fileModel->deleteFile($file_id);
-                    $data['status'] = 'success';
-                    $data['content']    = Mage::helper('staempfli_productattachment')->__('File ' . $filename . ' successfully deleted.');
+                    $this->listAction($product_id, 0);
+                    return;
                 } else {
-                    $data['status']     = 'error';
-                    $data['content']    = Mage::helper('staempfli_productattachment')->__('Unable to delete File!');
+                    $data = $this->_prepareOutputData(
+                        'error',
+                        Mage::helper('staempfli_productattachment')->__('Unable to delete File!'),
+                        'delete'
+                    );
                 }
             } else {
-                $data['status']     = 'error';
-                $data['content']    = Mage::helper('staempfli_productattachment')->__('File not found!');
+                $data = $this->_prepareOutputData(
+                    'error',
+                    Mage::helper('staempfli_productattachment')->__('File not found!'),
+                    'delete'
+                );
             }
         } else {
-            $data['status']     = 'error';
-            $data['content']    = Mage::helper('staempfli_productattachment')->__('Wrong params.');
+            $data = $this->_prepareOutputData(
+                'error',
+                Mage::helper('staempfli_productattachment')->__('Wrong params.'),
+                'delete'
+            );
         }
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));
+        return;
+    }
+
+    /**
+     * Standardized output format
+     *
+     * @param $status
+     * @param $content
+     * @param string $type
+     * @return array
+     */
+    protected function _prepareOutputData($status, $content, $type = 'list')
+    {
+        $data = array();
+
+        $data['status']     = $status;
+        if($type === 'list') {
+            $data['files']      = $content;
+        } else {
+            $data['content']    = $content;
+        }
+        $data['type']       = $type;
+        $data['updated']    = Mage::helper('staempfli_productattachment')->getLocalizedDateTime();
+
+        return $data;
     }
 
 }
