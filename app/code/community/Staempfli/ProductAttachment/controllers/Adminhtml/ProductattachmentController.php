@@ -117,6 +117,10 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
         $this->getResponse()->setBody(json_encode($data));
     }
 
+
+    /**
+     * Update  input field values
+     */
     public function updateAction()
     {
         $data           = array();
@@ -126,24 +130,32 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
         $formKey        = $this->getRequest()->getParam('form_key');
         $params         =$this->getRequest()->getParams();
 
-        $allowedParams = array(
-            'sort_order',
-            'description',
-            'title'
-        );
+        if($formKey && $product_id && $sessionFormKey === $formKey) {
+            $fileModel = Mage::getModel('staempfli_productattachment/file');
+            $allowedParams = array(
+                'sort_order',
+                'description',
+                'title'
+            );
 
-
-        foreach($params as $key => $value) {
-            foreach($allowedParams as $param) {
-                if(stripos($key, $param) !== false) {
-                    $id = str_replace($param . '_', '', $key);
-                    $updateParams[$id][str_replace('_' . $id, '', $key)] = $value;
+            foreach($params as $key => $value) {
+                foreach($allowedParams as $param) {
+                    if(stripos($key, $param) !== false) {
+                        $id = str_replace($param . '_', '', $key);
+                        $updateParams[$id][str_replace('_' . $id, '', $key)] = $value;
+                    }
                 }
             }
+
+            foreach($updateParams as $file_id => $fileData) {
+                $fileData['product_id'] = $product_id;
+                $fileModel->updateFile($file_id, $fileData);
+            }
+
+            $data['status'] = 'success';
+            $data['content']    = Mage::helper('staempfli_productattachment')->__('Update was successful.');
         }
 
-        $data['status'] = 'success';
-        $data['content']    = Mage::helper('staempfli_productattachment')->__('yay.');
 
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));
