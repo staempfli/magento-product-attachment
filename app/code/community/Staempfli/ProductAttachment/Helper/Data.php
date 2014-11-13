@@ -55,11 +55,13 @@ class Staempfli_ProductAttachment_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * @param $product_id
      * @param int $store_id
+     * @param bool $filterType
+     * @param bool $includeDefaultStore
      * @return bool
      */
-    public function hasAttachments($product_id, $store_id = 0)
+    public function hasAttachments($product_id, $store_id = 0, $filterType = false, $includeDefaultStore = false)
     {
-        $fileModel = Mage::getModel('staempfli_productattachment/file')->getFilesByProductId($product_id, $store_id);
+        $fileModel = Mage::getModel('staempfli_productattachment/file')->getFilesByProductId($product_id, $store_id, $filterType, $includeDefaultStore);
         if(count($fileModel) > 0) {
             return true;
         }
