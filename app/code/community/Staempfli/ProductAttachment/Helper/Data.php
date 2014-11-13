@@ -40,7 +40,6 @@ class Staempfli_ProductAttachment_Helper_Data extends Mage_Core_Helper_Abstract
         return $dir;
     }
 
-
     /**
      * @return bool|string
      */
@@ -51,6 +50,20 @@ class Staempfli_ProductAttachment_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         return realpath(Mage::getBaseDir('media') . DS . self::UPLOAD_DIR);
+    }
+
+    /**
+     * @param $product_id
+     * @param int $store_id
+     * @return bool
+     */
+    public function hasAttachments($product_id, $store_id = 0)
+    {
+        $fileModel = Mage::getModel('staempfli_productattachment/file')->getFilesByProductId($product_id, $store_id);
+        if(count($fileModel) > 0) {
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -103,29 +103,33 @@ class Staempfli_ProductAttachment_Model_File extends Mage_Core_Model_Abstract
      */
     public function updateFile($file_id, $data = array())
     {
-        $file = $this->load($file_id);
+        $file           = $this->load($file_id);
+        $current_time   = time();
 
-        if(isset($data['title'])) {
+        if(isset($data['title'])
+            && $data['title'] !== $file->getTitle()) {
             $file->setTitle($data['title']);
         }
 
-        if(isset($data['description'])) {
+        if(isset($data['description'])
+            && $data['description'] !== $file->getDescription()) {
             $file->setDescription($data['description']);
         }
 
-        if(isset($data['sort_order'])) {
+        if(isset($data['sort_order'])
+            && $data['sort_order'] !== $file->getSortOrder()) {
             $file->setSortOrder($data['sort_order']);
         }
 
-        if(isset($data['updated_at'])) {
-            $file->setUpdatedAt(time());
+        if($file->hasDataChanges()) {
+            $file->setUpdatedAt($current_time);
+            try {
+                $file->save();
+            } catch(Exception $e) {
+                Mage::log($e->getMessage(), Zend_log::ERR, Staempfli_ProductAttachment_Helper_Data::LOG_FILE);
+            }
         }
 
-        try {
-            $file->save();
-        } catch(Exception $e) {
-            Mage::log($e->getMessage(), Zend_log::ERR, Staempfli_ProductAttachment_Helper_Data::LOG_FILE);
-        }
         return $this;
     }
 

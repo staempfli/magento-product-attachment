@@ -25,14 +25,13 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
     public function uploadAction()
     {
         $product_id = $this->getRequest()->getParam('product');
-        $store      = $this->getRequest()->getParam('store');
+        $store_id   = $this->getRequest()->getParam('store');
 
         if($_FILES) {
             $fileModel  = Mage::getModel('staempfli_productattachment/file');
             $files      = $_FILES['file_data'];
             $fileCount  = count($files['name']);
             $fileData   = array();
-            $uploadPath = Mage::helper('staempfli_productattachment')->getUploadDir();
 
             // prepare files data array
             for($x=0;$x<$fileCount;$x++) {
@@ -47,28 +46,31 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
                 $filename   = pathinfo($data['name'], PATHINFO_FILENAME);
                 $extension  = pathinfo($data['name'], PATHINFO_EXTENSION);
                 $name       = $filename . '.' . $extension;
-                $file       = $uploadPath . DS . $name;
+                $file       = $this->_getFilePath($name, $product_id, $store_id);
 
-                $fileInfo = array(
-                    'filename'      => $name,
-                    'store_id'      => $store,
-                    'title'         => '',
-                    'description'   => ''
-                );
+                if($file) {
+                    $fileInfo = array(
+                        'filename'      => $name,
+                        'store_id'      => $store_id,
+                        'title'         => '',
+                        'description'   => '',
+                        'path'          => str_replace(Mage::getBaseDir('media') . DS, '', $file),
+                        'type'          => $extension
+                    );
 
-                $exist = file_exists($file);
+                    $exist = file_exists($file);
 
-                if(move_uploaded_file($data['tmp_name'], $file)) {
-                    if(!$exist) {
-                        $fileModel->addFile($product_id, $fileInfo);
-                    } else {
-                        $fileModel->updateFile($product_id, $fileInfo);
+                    if(move_uploaded_file($data['tmp_name'], $file)) {
+                        if(!$exist) {
+                            $fileModel->addFile($product_id, $fileInfo);
+                        } else {
+                            $fileModel->updateFile($product_id, $fileInfo);
+                        }
                     }
                 }
             }
-
         }
-        $this->_redirect('*/productattachment/form/product/' . $product_id . '/store/' . $store);
+        $this->_redirect('*/productattachment/form/product/' . $product_id . '/store/' . $store_id);
 
     }
 
@@ -249,6 +251,35 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
         $data['updated']    = Mage::helper('staempfli_productattachment')->getLocalizedDateTime();
 
         return $data;
+    }
+
+    /**
+     * @param $name
+     * @param $product_id
+     * @param $store_id
+     * @return string
+     */
+    protected function _getFilePath($name, $product_id, $store_id = false)
+    {
+        $path = Mage::helper('staempfli_productattachment')->getUploadDir();
+
+        if($store_id !== false) {
+            $path = $path . DS . $store_id;
+        }
+
+        if($product_id) {
+            $path = $path . DS . $product_id;
+        }
+
+        if(!is_dir($path)) {
+            if(!mkdir($path, 0777, true)) {
+                Mage::log('Unable to create directory: ' . $path, Zend_log::ERR, Staempfli_ProductAttachment_Helper_Data::LOG_FILE);
+                return false;
+            }
+        }
+
+        return $path . DS . $name;
+
     }
 
 }
