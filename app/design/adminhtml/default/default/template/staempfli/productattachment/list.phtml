@@ -168,8 +168,8 @@
                     contentDst.innerHTML = content;
                     messageDst.innerHTML = jsonData.updated;
                 } else {
-                    if(jsonData.status === 'error' && jsonData.content) {
-                        content = errorTemplate.replace('{{message}}', jsonData.content);
+                    if(jsonData.status === 'error' && jsonData.files) {
+                        content = errorTemplate.replace('{{message}}', jsonData.files);
                     } else {
                         content = errorTemplate.replace('{{message}}', '');
                     }
