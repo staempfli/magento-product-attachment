@@ -54,7 +54,7 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
                         'store_id'      => $store_id,
                         'title'         => '',
                         'description'   => '',
-                        'path'          => str_replace(Mage::getBaseDir('media') . DS, '', $file),
+                        'path'          => str_replace(Mage::helper('staempfli_productattachment')->getUploadDir() . DS, '', $file),
                         'type'          => $extension
                     );
 
