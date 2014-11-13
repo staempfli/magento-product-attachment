@@ -89,9 +89,7 @@ $fileTable = $installer->getConnection()->newTable($installer->getTable('staempf
         'updated_at',
         Varien_Db_Ddl_Table::TYPE_TIMESTAMP,
         null,
-        array(
-            'default' => Varien_Db_Ddl_Table::TIMESTAMP_UPDATE
-        ),
+        array(),
         'updated at'
     )
     ->addColumn(
