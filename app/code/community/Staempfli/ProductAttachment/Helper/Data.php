@@ -164,4 +164,18 @@ class Staempfli_ProductAttachment_Helper_Data extends Mage_Core_Helper_Abstract
         $datetime->setLocale(Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_LOCALE))->setTimezone(Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_TIMEZONE));
         return $datetime->get(Zend_Date::DATETIME_MEDIUM);
     }
+
+    /**
+     * Sanitize filename
+     *
+     * @param $file
+     * @return string
+     */
+    public function sanitizeFileName($file)
+    {
+        $filename   = pathinfo($file, PATHINFO_FILENAME);
+        $extension  = pathinfo($file, PATHINFO_EXTENSION);
+        $clean      = preg_replace("/[^a-zA-Z0-9]/", "", $filename) . '.' . $extension;
+        return $clean;
+    }
 }

@@ -45,7 +45,7 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
             foreach($fileData as $data) {
                 $filename   = pathinfo($data['name'], PATHINFO_FILENAME);
                 $extension  = pathinfo($data['name'], PATHINFO_EXTENSION);
-                $name       = $filename . '.' . $extension;
+                $name       = Mage::helper('staempfli_productattachment')->sanitizeFileName($filename . '.' . $extension);
                 $file       = $this->_getFilePath($name, $product_id, $store_id);
 
                 if($file) {
@@ -279,7 +279,5 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
         }
 
         return $path . DS . $name;
-
     }
-
 }
