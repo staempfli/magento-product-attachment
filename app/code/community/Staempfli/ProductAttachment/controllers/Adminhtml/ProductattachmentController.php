@@ -192,6 +192,7 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
         $file_id        = $this->getRequest()->getParam('file_id');
         $product_id     = $this->getRequest()->getParam('product_id');
         $formKey        = $this->getRequest()->getParam('form_key');
+        $storeId        = $this->getRequest()->getParam('store_id');
 
         if($formKey && $file_id && $sessionFormKey === $formKey) {
             $fileModel      = Mage::getModel('staempfli_productattachment/file');
@@ -199,7 +200,8 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
                 ->addFieldToFilter('file_id', $file_id);
 
             if($filename = $fileCollection->getFirstItem()->getFilename()) {
-                if(unlink(Mage::helper('staempfli_productattachment')->getUploadDir() . DS . $filename)) {
+                $file = $this->_getFilePath($filename, $product_id, $storeId);
+                if(unlink($file)) {
                     $fileModel->deleteFile($file_id);
                     $this->listAction($product_id, 0);
                     return;

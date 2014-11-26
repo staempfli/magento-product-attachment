@@ -122,7 +122,8 @@
         deleteFile = function(file_id) {
             doRequest(delete_url, {
                 file_id: file_id,
-                product_id: product_id
+                product_id: product_id,
+                store_id: store
             }, 'delete');
         };
 
