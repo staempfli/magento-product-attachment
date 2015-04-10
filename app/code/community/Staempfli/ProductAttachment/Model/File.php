@@ -34,18 +34,23 @@ class Staempfli_ProductAttachment_Model_File extends Mage_Core_Model_Abstract
      * Return the files by product id
      *
      * @param $id
-     * @param int $store_id
+     * @param int|null $store_id
      * @param bool $filterType
      * @param bool $includeDefaultStore
      * @return mixed
      */
-    public function getFilesByProductId($id, $store_id = 0, $filterType = false, $includeDefaultStore = false)
+    public function getFilesByProductId($id, $store_id = null, $filterType = false, $includeDefaultStore = false)
     {
         $collection = Mage::getModel('staempfli_productattachment/file')->getCollection()->addFieldToFilter('product_id',$id);
 
+        // if store_id is null, use current store
+        if(is_null($store_id)) {
+            $store_id = Mage::app()->getStore()->getStoreId();
+        }
+
         if($includeDefaultStore) {
             $collection->addFieldToFilter('store_id', array('in' => array(0, $store_id)));
-        } else if(intval($store_id) !== 0) {
+        } else {
             $collection->addFieldToFilter('store_id',$store_id);
         }
 
