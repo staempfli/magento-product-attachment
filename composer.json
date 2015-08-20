@@ -4,7 +4,7 @@
     "type": "magento-module",
     "description": "Staempfli ProductAttachment allows to upload different file types to a product",
     "homepage": "https://github.com/staempfli/magento-product-attachment",
-    "require": {
+    "suggest": {
         "magento-hackathon/magento-composer-installer": "2.1.1"
     }
 }
