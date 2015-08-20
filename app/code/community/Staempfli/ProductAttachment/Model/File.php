@@ -48,9 +48,9 @@ class Staempfli_ProductAttachment_Model_File extends Mage_Core_Model_Abstract
             $store_id = Mage::app()->getStore()->getStoreId();
         }
 
-        if($includeDefaultStore) {
-            $collection->addFieldToFilter('store_id', array('in' => array(0, $store_id)));
-        } else {
+        if($includeDefaultStore && 0 !== intval($store_id)) {
+            $collection->addFieldToFilter('store_id', array('in' => array(0, intval($store_id))));
+        } else if(0 !== intval($store_id)) {
             $collection->addFieldToFilter('store_id',$store_id);
         }
 
