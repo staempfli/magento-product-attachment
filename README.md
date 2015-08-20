@@ -4,7 +4,7 @@ Staempfli ProductAttachment allows to upload different file types for a product
 
 Facts
 -----
-- version: 1.0.1
+- version: 1.0.2
 - extension key: Staempfli_ProductAttachment
 - [extension on GitHub](https://github.com/staempfli/magento-product-attachment)
 - [direct download link](https://github.com/staempfli/magento-product-attachment/archive/master.zip)
