@@ -1,0 +1,16 @@
+<?php
+if (($files = Mage::getModel('staempfli_productattachment/file')->getFilesByProductId($this->getProduct()->getId(), Mage::app()->getStore()->getStoreId(), false, true)->getData()) && count($files) > 0):
+    $helper = $this->helper('staempfli_productattachment');
+    $dir = Mage::getBaseUrl('media').$helper::UPLOAD_DIR;
+    ?>
+<li class="tab_list_element">
+    <!-- <a id="mediathek" class="headline active"><?php echo $this->__('Mediathek') ?></a> -->
+    <div id="tab-mediathek" class="tabs_content">
+        <?php foreach ($files as $file): ?>
+            <div class="mediathek">
+                <i class="fa fa-file-<?=$file['type']; ?>-o fa-2x"></i> <a href="<?= $dir.DS.$file['path']; ?>"><?= $file['description'];?></a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</li>
+<?php endif; ?>
