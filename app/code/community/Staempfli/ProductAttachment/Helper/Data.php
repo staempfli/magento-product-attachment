@@ -178,4 +178,31 @@ class Staempfli_ProductAttachment_Helper_Data extends Mage_Core_Helper_Abstract
         $clean      = preg_replace("/[^a-zA-Z0-9]/", "", $filename) . '.' . $extension;
         return $clean;
     }
+    /**
+     * @param $name
+     * @param $product_id
+     * @param $store_id
+     * @return string
+     */
+    public function getFilePath($name, $product_id, $store_id = false)
+    {
+        $path = Mage::helper('staempfli_productattachment')->getUploadDir();
+
+        if($store_id !== false) {
+            $path = $path . DS . $store_id;
+        }
+
+        if($product_id) {
+            $path = $path . DS . $product_id;
+        }
+
+        if(!is_dir($path)) {
+            if(!mkdir($path, 0777, true)) {
+                Mage::log('Unable to create directory: ' . $path, Zend_log::ERR, Staempfli_ProductAttachment_Helper_Data::LOG_FILE);
+                return false;
+            }
+        }
+
+        return $path . DS . $name;
+    }
 }

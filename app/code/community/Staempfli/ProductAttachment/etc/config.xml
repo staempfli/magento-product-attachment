@@ -76,4 +76,13 @@
             </updates>
         </layout>
     </adminhtml>
+    <frontend>
+        <layout>
+            <updates>
+                <staempfli_productattachment>
+                    <file>productattachment.xml</file>
+                </staempfli_productattachment>
+            </updates>
+        </layout>
+    </frontend>
 </config>

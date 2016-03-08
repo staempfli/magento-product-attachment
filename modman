@@ -2,5 +2,7 @@ app/code/community/Staempfli/ProductAttachment                              app/
 app/etc/modules/Staempfli_ProductAttachment.xml                             app/etc/modules/Staempfli_ProductAttachment.xml
 app/design/adminhtml/default/default/template/staempfli/productattachment   app/design/adminhtml/default/default/template/staempfli/productattachment
 app/design/adminhtml/default/default/layout/staempfli/productattachment.xml app/design/adminhtml/default/default/layout/staempfli/productattachment.xml
+app/design/frontend/base/default/layout/productattachment.xml               app/design/frontend/base/default/layout/productattachment.xml
+app/design/frontend/base/default/template/productattachment               app/design/frontend/base/default/template/productattachment
 skin/adminhtml/default/default/staempfli/css/productattachment.css          skin/adminhtml/default/default/staempfli/css/productattachment.css
 app/locale/de_DE/Staempfli_ProductAttachment.csv                            app/locale/de_DE/Staempfli_ProductAttachment.csv
