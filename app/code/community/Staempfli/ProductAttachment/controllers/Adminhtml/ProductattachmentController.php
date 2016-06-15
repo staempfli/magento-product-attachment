@@ -22,6 +22,12 @@
  */
 class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends Mage_Adminhtml_Controller_Action
 {
+
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('admin/productattachment');
+    }
+
     public function uploadAction()
     {
         $product_id = $this->getRequest()->getParam('product');
