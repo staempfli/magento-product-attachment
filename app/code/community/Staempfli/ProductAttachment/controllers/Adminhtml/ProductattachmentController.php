@@ -92,7 +92,7 @@ class Staempfli_ProductAttachment_Adminhtml_ProductattachmentController extends 
      * @param $product_id
      * @param $store_id
      */
-    public function listAction($product_id, $store_id)
+    public function listAction($product_id = null, $store_id = null)
     {
         $filesArray     = array();
         $sessionFormKey = Mage::getSingleton('core/session')->getFormKey();
